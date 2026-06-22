@@ -1,0 +1,9 @@
+5
+##start
+start 0 0
+mid1 1 1
+##end
+end 2 2
+mid2 3 3
+start-mid1
+end-mid2

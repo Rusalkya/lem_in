@@ -1,0 +1,18 @@
+5
+##start
+start 2 0
+##end
+end 2 4
+A1 0 1
+A2 0 3
+B1 4 1
+B2 4 3
+C 2 2
+start-A1
+start-B1
+A1-C
+B1-C
+C-A2
+C-B2
+A2-end
+B2-end

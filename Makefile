@@ -3,7 +3,7 @@ VISU_NAME	= visu-hex
 SRCDIR		= srcs
 OBJDIR		= obj
 CC			= gcc
-CFLAGS		= -Wall -Wextra -Werror -I.
+CFLAGS		= -Wall -Wextra -Werror -I. -Iminilibx-linux
 
 SOURCES		= srcs/main.c \
 			  srcs/parsing.c \
@@ -24,7 +24,7 @@ $(NAME): $(OBJECTS)
 	$(CC) $(CFLAGS) -o $(NAME) $(OBJECTS)
 
 $(VISU_NAME): $(VISU_OBJECTS) $(filter-out $(OBJDIR)/main.o,$(OBJECTS))
-	$(CC) $(CFLAGS) -o $(VISU_NAME) $(VISU_OBJECTS) $(filter-out $(OBJDIR)/main.o,$(OBJECTS))
+	$(CC) $(CFLAGS) -o $(VISU_NAME) $(VISU_OBJECTS) $(filter-out $(OBJDIR)/main.o,$(OBJECTS)) -Lminilibx-linux -lmlx -lXext -lX11 -lm
 
 $(OBJDIR):
 	mkdir -p $(OBJDIR)

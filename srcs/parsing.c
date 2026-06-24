@@ -106,6 +106,11 @@ int	parse_input(t_lemin *lemin)
 	lemin->links = NULL;
 	lemin->start_id = -1;
 	lemin->end_id = -1;
+	lemin->adjacency = NULL;
+	lemin->capacity = NULL;
+	lemin->flow_graph = NULL;
+	lemin->paths = NULL;
+	lemin->nb_paths = 0;
 	next_type = NORMAL;
 	
 	line = get_next_line(0);

@@ -212,13 +212,37 @@ static void	generate_internal_turns(t_lemin *lemin)
 		i++;
 	}
 
+	int *path_ants_count = calloc(lemin->nb_paths, sizeof(int));
+	if (!path_ants_count)
+	{
+		free(ants);
+		free(path_assignment);
+		return ;
+	}
 	i = 1;
 	while (i <= lemin->nb_ants)
 	{
 		if (lemin->nb_paths > 0)
-			path_assignment[i] = (i - 1) % lemin->nb_paths;
+		{
+			int best_path = 0;
+			int min_score = (lemin->paths[0].length - 1) + path_ants_count[0];
+			int p = 1;
+			while (p < lemin->nb_paths)
+			{
+				int score = (lemin->paths[p].length - 1) + path_ants_count[p];
+				if (score < min_score)
+				{
+					min_score = score;
+					best_path = p;
+				}
+				p++;
+			}
+			path_assignment[i] = best_path;
+			path_ants_count[best_path]++;
+		}
 		i++;
 	}
+	free(path_ants_count);
 
 	int ants_finished = 0;
 	int turn_idx = 0;
@@ -738,14 +762,11 @@ static int	update_and_render(t_vars *vars)
 	draw_large_number(&vars->frame, 400, 80, ants_in_transit, 2, 0x8B4513);     // Brown (Transit)
 	draw_large_number(&vars->frame, 400, 110, ants_at_end, 2, 0xE74C3C);         // Red (End)
 
+	/* Render ONLY the turn count in the top right, drawn directly to the frame, larger (scale 4) */
+	draw_large_number(&vars->frame, vars->bg_width / 2 + 80, 40, vars->current_turn, 4, 0xFFFFFF); // White (scale 4)
+
 	/* Push framebuffer to window */
 	mlx_put_image_to_window(vars->mlx, vars->win, vars->frame.ptr, 0, 0);
-
-	/* Render the turn label at the very top center of the window */
-	char	turn_str[64];
-	sprintf(turn_str, "nombre de tour: %d", vars->current_turn);
-	int		draw_x = (vars->bg_width - (int)strlen(turn_str) * 6) / 2;
-	mlx_string_put(vars->mlx, vars->win, draw_x, 20, 0xFFFFFF, turn_str);
 
 	/* Render Room Labels under rooms (Color-coded) */
 	i = 0;

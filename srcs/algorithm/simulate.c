@@ -33,16 +33,38 @@ void	simulate_ants(t_lemin *lemin)
 		i++;
 	}
 	
-	/* Assigner les fourmis aux chemins de manière round-robin */
+	/* Assigner les fourmis aux chemins de manière gloutonne (Greedy) */
+	int *path_ants_count = calloc(lemin->nb_paths, sizeof(int));
+	if (!path_ants_count)
+	{
+		free(ants);
+		free(path_assignment);
+		return ;
+	}
 	i = 1;
-	j = 0;
 	while (i <= lemin->nb_ants)
 	{
 		if (lemin->nb_paths > 0)
-			path_assignment[i] = j % lemin->nb_paths;
-		j++;
+		{
+			int best_path = 0;
+			int min_score = (lemin->paths[0].length - 1) + path_ants_count[0];
+			int p = 1;
+			while (p < lemin->nb_paths)
+			{
+				int score = (lemin->paths[p].length - 1) + path_ants_count[p];
+				if (score < min_score)
+				{
+					min_score = score;
+					best_path = p;
+				}
+				p++;
+			}
+			path_assignment[i] = best_path;
+			path_ants_count[best_path]++;
+		}
 		i++;
 	}
+	free(path_ants_count);
 	
 	current_turn = 0;
 	ants_finished = 0;

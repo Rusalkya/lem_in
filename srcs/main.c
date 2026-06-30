@@ -16,9 +16,10 @@ int	main(void)
 	/* Afficher la ferme */
 	print_farm(&lemin);
 	
+
 	/* Calculer le max flow */
 	max_flow = compute_max_flow(&lemin);
-	if (max_flow == -1)
+	if (max_flow <= 0)
 	{
 		free_lemin(&lemin);
 		ft_putendl_fd("ERROR", 2);

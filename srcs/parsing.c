@@ -14,6 +14,39 @@ int	find_room_by_name(t_lemin *lemin, const char *name)
 	return (-1);
 }
 
+static void	free_split(char **split)
+{
+	int	i;
+
+	i = 0;
+	if (!split)
+		return ;
+	while (split[i])
+	{
+		free(split[i]);
+		i++;
+	}
+	free(split);
+}
+
+static int	is_numeric_str(const char *str)
+{
+	int	i;
+
+	i = 0;
+	if (str[i] == '-' || str[i] == '+')
+		i++;
+	if (!str[i])
+		return (0);
+	while (str[i])
+	{
+		if (str[i] < '0' || str[i] > '9')
+			return (0);
+		i++;
+	}
+	return (1);
+}
+
 /* Parse une room */
 int	parse_room(t_lemin *lemin, char *line, t_room_type type)
 {
@@ -21,24 +54,66 @@ int	parse_room(t_lemin *lemin, char *line, t_room_type type)
 	int		x;
 	int		y;
 	int		id;
+	int		i;
 
 	split = ft_split(line, ' ');
 	if (!split || !split[0] || !split[1] || !split[2] || split[3])
 	{
+		free_split(split);
 		ft_putendl_fd("ERROR", 2);
 		return (-1);
 	}
 	if (split[0][0] == 'L' || split[0][0] == '#')
 	{
+		free_split(split);
+		ft_putendl_fd("ERROR", 2);
+		return (-1);
+	}
+	if (!is_numeric_str(split[1]) || !is_numeric_str(split[2]))
+	{
+		free_split(split);
 		ft_putendl_fd("ERROR", 2);
 		return (-1);
 	}
 	x = atoi(split[1]);
 	y = atoi(split[2]);
 	
+	if (type == START && lemin->start_id != -1)
+	{
+		free_split(split);
+		ft_putendl_fd("ERROR", 2);
+		return (-1);
+	}
+	if (type == END && lemin->end_id != -1)
+	{
+		free_split(split);
+		ft_putendl_fd("ERROR", 2);
+		return (-1);
+	}
+	if (find_room_by_name(lemin, split[0]) != -1)
+	{
+		free_split(split);
+		ft_putendl_fd("ERROR", 2);
+		return (-1);
+	}
+	i = 0;
+	while (i < lemin->nb_rooms)
+	{
+		if (lemin->rooms[i].x == x && lemin->rooms[i].y == y)
+		{
+			free_split(split);
+			ft_putendl_fd("ERROR", 2);
+			return (-1);
+		}
+		i++;
+	}
+	
 	lemin->rooms = realloc(lemin->rooms, sizeof(t_room) * (lemin->nb_rooms + 1));
 	if (!lemin->rooms)
+	{
+		free_split(split);
 		return (-1);
+	}
 	
 	id = lemin->nb_rooms;
 	lemin->rooms[id].name = strdup(split[0]);
@@ -53,6 +128,7 @@ int	parse_room(t_lemin *lemin, char *line, t_room_type type)
 		lemin->end_id = id;
 	
 	lemin->nb_rooms++;
+	free_split(split);
 	return (0);
 }
 
@@ -62,10 +138,12 @@ int	parse_link(t_lemin *lemin, char *line)
 	char	**split;
 	int		room1_id;
 	int		room2_id;
+	int		i;
 
 	split = ft_split(line, '-');
 	if (!split || !split[0] || !split[1] || split[2])
 	{
+		free_split(split);
 		ft_putendl_fd("ERROR", 2);
 		return (-1);
 	}
@@ -73,15 +151,32 @@ int	parse_link(t_lemin *lemin, char *line)
 	room1_id = find_room_by_name(lemin, split[0]);
 	room2_id = find_room_by_name(lemin, split[1]);
 	
-	if (room1_id == -1 || room2_id == -1)
+	if (room1_id == -1 || room2_id == -1 || room1_id == room2_id)
 	{
+		free_split(split);
 		ft_putendl_fd("ERROR", 2);
 		return (-1);
 	}
 	
+	i = 0;
+	while (i < lemin->nb_links)
+	{
+		if ((lemin->links[i].room1_id == room1_id && lemin->links[i].room2_id == room2_id) ||
+			(lemin->links[i].room1_id == room2_id && lemin->links[i].room2_id == room1_id))
+		{
+			free_split(split);
+			ft_putendl_fd("ERROR", 2);
+			return (-1);
+		}
+		i++;
+	}
+	
 	lemin->links = realloc(lemin->links, sizeof(t_link) * (lemin->nb_links + 1));
 	if (!lemin->links)
+	{
+		free_split(split);
 		return (-1);
+	}
 	
 	lemin->links[lemin->nb_links].room1_id = room1_id;
 	lemin->links[lemin->nb_links].room2_id = room2_id;
@@ -89,6 +184,7 @@ int	parse_link(t_lemin *lemin, char *line)
 	lemin->links[lemin->nb_links].flow = 0;
 	
 	lemin->nb_links++;
+	free_split(split);
 	return (0);
 }
 

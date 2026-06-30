@@ -1,7 +1,6 @@
 #pragma GCC diagnostic ignored "-Wcast-function-type"
 #include "../lem_in.h"
 #include <mlx.h>
-#include <math.h>
 
 /* ================= PARSING AND MOVES STRUCTURES ================= */
 
@@ -495,9 +494,8 @@ static void	draw_large_number(t_img *img, int x_start, int y_start, int num, int
 	}
 }
 
-static void	draw_tunnel(t_img *img, int x0, int y0, int x1, int y1, int color)
+static void	draw_tunnel(t_img *img, int x0, int y0, int x1, int y1)
 {
-	(void)color;
 	int	offset;
 
 	offset = -3;
@@ -660,7 +658,7 @@ static int	update_and_render(t_vars *vars)
 	{
 		int	u = vars->lemin.links[i].room1_id;
 		int	v = vars->lemin.links[i].room2_id;
-		draw_tunnel(&vars->frame, vars->room_x[u], vars->room_y[u], vars->room_x[v], vars->room_y[v], 0x000000);
+		draw_tunnel(&vars->frame, vars->room_x[u], vars->room_y[u], vars->room_x[v], vars->room_y[v]);
 		i++;
 	}
 

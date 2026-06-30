@@ -212,6 +212,8 @@ int	parse_input(t_lemin *lemin)
 	line = get_next_line(0);
 	if (!line || sscanf(line, "%d", &lemin->nb_ants) != 1 || lemin->nb_ants <= 0)
 	{
+		if (line)
+			free(line);
 		ft_putendl_fd("ERROR", 2);
 		return (-1);
 	}

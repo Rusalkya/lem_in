@@ -195,6 +195,13 @@ void	free_lemin(t_lemin *lemin)
 		}
 		free(lemin->paths);
 	}
+	if (g_buffer)
+	{
+		free(g_buffer);
+		g_buffer = NULL;
+	}
+	g_buffer_len = 0;
+	g_eof = 0;
 }
 
 void	ft_putendl_fd(const char *s, int fd)

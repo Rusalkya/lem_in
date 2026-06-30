@@ -221,17 +221,6 @@ int	update_and_render(t_vars *vars)
 
 	/* Pousser l'image dessinée sur l'écran */
 	mlx_put_image_to_window(vars->mlx, vars->win, vars->frame.ptr, 0, 0);
-
-	/* Écrire les étiquettes textuelles des noms des salles sous chaque salle */
-	i = 0;
-	while (i < vars->lemin.nb_rooms)
-	{
-		int	rx = vars->room_x[i];
-		int	ry = vars->room_y[i];
-		int	color = 0x000000;
-		mlx_string_put(vars->mlx, vars->win, rx - 15, ry + 75, color, vars->lemin.rooms[i].name);
-		i++;
-	}
 	return (0);
 }
 
